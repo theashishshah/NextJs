@@ -1,13 +1,13 @@
-
 "use client";
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Axios } from "axios";
+import toast from "react-hot-toast";
 
 function SignupPage() {
-  const router = useRouter()
+  const router = useRouter();
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -15,13 +15,34 @@ function SignupPage() {
     password: "",
   });
 
-  const [buttonDisabled, setButtonDisabled] = useState(false)
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() =>{
-    
-  }, [user])
+  useEffect(() => {
+    if (
+      user.email.length > 0 &&
+      user.username.length > 0 &&
+      user.name.length > 0 &&
+      user.password.length > 0
+    ) {
+      setButtonDisabled(true);
+    } else {
+      setButtonDisabled(false);
+    }
+  }, [user]);
 
-  const onSignup = async () => {};
+  const onSignup = async () => {
+    try {
+      
+      toast.success("Succefully signup")
+    } catch (error: any) {
+        toast.error(error.message)
+        console.log(`Something went wrong while siging ${error}`)
+  }finally{
+          setLoading(false)
+      }
+    }
+}
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
@@ -29,7 +50,7 @@ function SignupPage() {
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Create an account
+              {loading ? "Loading..." : "Create an account "}
             </h1>
             <form className="space-y-4 md:space-y-6" action="#">
               <div>
@@ -135,7 +156,9 @@ function SignupPage() {
                 type="submit"
                 className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Create an account
+                {buttonDisabled
+                  ? "Create an account"
+                  : "Enter the details first"}
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
