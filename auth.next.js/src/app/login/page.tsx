@@ -1,22 +1,69 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
+
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Axios } from "axios";
+import axios, { Axios } from "axios";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify"; // Ensure ToastContainer is here
+import "react-toastify/dist/ReactToastify.css"; // Required for styles
 
 function LoginPage() {
+  const router = useRouter();
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
 
-  const onLogin = async () => {};
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user.password.length > 0 && user.email.length > 0) {
+      setButtonDisabled(true);
+    } else {
+      setButtonDisabled(false);
+    }
+  }, [user]);
+
+  const onLogin = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/users/login", user);
+
+      console.log("Logged in user", response.data);
+      toast.success("Successfully logged in!");
+      setTimeout(() => {
+        router.push("/profile");
+      }, 2000);
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
+      <div>
+        {/* Ensure the ToastContainer is here */}
+        <ToastContainer
+          position="top-center"
+          autoClose={5000} // How long the toast stays
+          hideProgressBar={false} // Show progress bar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </div>
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -66,7 +113,7 @@ function LoginPage() {
                 type="submit"
                 className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Log in
+                {buttonDisabled ? "Log in" : "Drop your deets to get in!"}
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Don&apos;t have an account?{" "}

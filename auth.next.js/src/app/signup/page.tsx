@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Axios } from "axios";
-import toast from "react-hot-toast";
+import axios from "axios";
+import { toast } from "react-toastify"; // Use react-toastify for toast messages
+import { ToastContainer } from "react-toastify"; // Ensure ToastContainer is here
+import "react-toastify/dist/ReactToastify.css"; // Required for styles
 
 function SignupPage() {
   const router = useRouter();
@@ -16,7 +18,7 @@ function SignupPage() {
   });
 
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (
@@ -31,21 +33,44 @@ function SignupPage() {
     }
   }, [user]);
 
-  const onSignup = async () => {
+  const onSignup = async (e: any) => {
+    e.preventDefault();
     try {
-      
-      toast.success("Succefully signup")
+      setLoading(true);
+
+      const response = await axios.post("api/users/signup", user);
+
+      console.log(`Signup success ${response.data}`);
+
+      toast.success("Successfully signed up!");
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 1000);
     } catch (error: any) {
-        toast.error(error.message)
-        console.log(`Something went wrong while siging ${error}`)
-  }finally{
-          setLoading(false)
-      }
+      toast.error(`Error: ${error.message}`);
+      console.log(`Something went wrong while signing up: ${error}`);
+    } finally {
+      setLoading(false);
     }
-}
+  };
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
+      <div>
+        {/* Ensure the ToastContainer is here */}
+        <ToastContainer
+          position="top-center"
+          autoClose={5000} // How long the toast stays
+          hideProgressBar={false} // Show progress bar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </div>
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -62,7 +87,7 @@ function SignupPage() {
                 </label>
                 <input
                   value={user.email}
-                  onChange={(e) => setUser({ ...user, email: e.target.value })} // keeping everything same and updating username only with its value
+                  onChange={(e) => setUser({ ...user, email: e.target.value })}
                   type="email"
                   name="email"
                   id="email"
@@ -72,7 +97,7 @@ function SignupPage() {
               </div>
               <div>
                 <label
-                  htmlFor="email"
+                  htmlFor="username"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Username
@@ -82,7 +107,7 @@ function SignupPage() {
                     setUser({ ...user, username: e.target.value })
                   }
                   value={user.username}
-                  type="email"
+                  type="text"
                   name="email"
                   id="email"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -99,7 +124,7 @@ function SignupPage() {
                 <input
                   onChange={(e) => setUser({ ...user, name: e.target.value })}
                   value={user.name}
-                  type="email"
+                  type="text"
                   name="email"
                   id="email"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
