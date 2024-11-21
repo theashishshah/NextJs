@@ -1,7 +1,26 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
 
+"use client";
+
+import axios from "axios";
+import { useRouter } from "next/navigation";
+
 export default function ProfilePage() {
+  const router = useRouter();
+  const onLogout = async (e: any) => {
+    e.preventDefault();
+    try {
+      const logoutRes = await axios.get("api/users/logout");
+      console.log(logoutRes);
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 1000);
+    } catch (error: any) {
+      console.log("error while clicking the log out button");
+    }
+  };
   return (
     <section className="relative pt-36 pb-24">
       <img
@@ -103,6 +122,12 @@ export default function ProfilePage() {
             </button>
             <button className="rounded-full border border-solid border-indigo-600 bg-indigo-600 py-3 px-4 text-sm font-semibold text-white whitespace-nowrap shadow-sm shadow-transparent transition-all duration-500 hover:shadow-gray-200 hover:bg-indigo-700 hover:border-indigo-700">
               Book a Session
+            </button>
+            <button
+              onClick={onLogout}
+              className="bg-slate-600 text-white px-4 py-2 rounded-xl hover:bg-slate-700"
+            >
+              Log out
             </button>
           </div>
         </div>

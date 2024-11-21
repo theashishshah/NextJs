@@ -21,7 +21,7 @@ export async function connect() {
       );
     });
 
-    connection.on("error", (error) => {
+    connection.on("error", (error: any) => {
       console.error(`MongoDB connection error: ${error}`);
       // Instead of exiting the app, consider implementing a retry strategy or just logging
       // process.exit(1); // This can be used if you want to terminate the process on DB connection failure
