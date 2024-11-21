@@ -5,8 +5,11 @@
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function ProfilePage() {
+  const [username, setUsername] = useState("nothing")
+  const [createdAt, setCreatedAt] = useState("")
   const router = useRouter();
   const onLogout = async (e: any) => {
     e.preventDefault();
@@ -21,6 +24,29 @@ export default function ProfilePage() {
       console.log("error while clicking the log out button");
     }
   };
+
+  const onGetUserData = async (e) =>{
+    e.preventDefault()
+    try {
+      const user = await axios("/api/users/aboutuser")
+      console.log("What are you getting while making the axios", user)
+      setUsername(user.data.userData.fullName)
+      const createdAt = user.data.userData.createdAt;
+      const date = new Date(createdAt)
+      const formattedDate = date.toLocaleString("en-US", {
+        weekday: "short", // Abbreviated weekday (e.g., "Thu")
+        year: "numeric",
+        month: "short", // Abbreviated month name (e.g., "Nov")
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true, // Use 12-hour format (AM/PM)
+      });
+      setCreatedAt(formattedDate);
+    } catch (error: any) {
+      console.log("Something went wrong while fetching the data in profile page.", error)
+    }
+  }
   return (
     <section className="relative pt-36 pb-24">
       <img
@@ -129,10 +155,16 @@ export default function ProfilePage() {
             >
               Log out
             </button>
+            <button
+              onClick={onGetUserData}
+              className="bg-slate-600 text-white px-4 py-2 rounded-xl hover:bg-slate-700"
+            >
+              Get your details
+            </button>
           </div>
         </div>
         <h3 className="text-center font-manrope font-bold text-3xl leading-10 text-gray-500 mb-3">
-          Ashish shah
+          {username} <span>{createdAt}</span>
         </h3>
         <p className="font-normal text-base leading-7 text-gray-500 text-center mb-8">
           A social media influencers and singer
