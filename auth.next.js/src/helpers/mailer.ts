@@ -5,7 +5,7 @@ import nodemailer from "nodemailer";
 import { User } from "@/models/userModel";
 import bcryptjs from "bcryptjs";
 
-export const sentEmail = async ({ email, emailType, userId }: any) => {
+export const sendEmail = async ({ email, emailType, userId }: any) => {
   try {
     // create a hashed hashedToken and send it to client as well as in db
     const hashedToken = await bcryptjs.hash(userId.toString(), 10);
@@ -63,7 +63,7 @@ export const sentEmail = async ({ email, emailType, userId }: any) => {
 
       html:
         emailType === "VERIFY"
-          ? `<p>Please verify your email by clicking the link below:</p><a href="${hashedToken}">Verify Email</a>`
+          ? `<p>Please verify your email by clicking the link below:</p><a href="${process.env.DOMAIN}/verifymail?token=${hashedToken}">Verify Email.</a>`
           : `<p>You requested a password reset. Click the link below to reset your password:</p><a href="${hashedToken}">Reset Password</a>`,
     };
 
